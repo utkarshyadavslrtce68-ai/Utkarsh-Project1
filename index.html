@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LexiCheck NLP - Advanced Spelling & Grammar Checker</title>
+    <meta name="description" content="State-of-the-art NLP Spelling and Grammar Checker web application built with React, TypeScript, and Tailwind CSS." />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <script>
+      // If opened directly via file:// protocol without a bundler, redirect seamlessly to standalone.html
+      if (window.location.protocol === 'file:') {
+        window.location.replace('standalone.html');
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <div style="padding: 2rem; text-align: center; font-family: sans-serif;">
+        <h2>JavaScript is required to run LexiCheck NLP Web App.</h2>
+        <p>If you are opening this file locally without a web server, please open <a href="standalone.html">standalone.html</a> directly.</p>
+      </div>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

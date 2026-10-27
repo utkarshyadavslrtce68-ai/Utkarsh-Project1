@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LexiCheck NLP - Advanced Spelling & Grammar Checker</title>
+  <meta name="description" content="State-of-the-art NLP Spelling and Grammar Checker with Levenshtein Dynamic Programming, Peter Norvig Bayesian Corrector, Syntactic Analysis, and Readability Scoring.">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/visualizer.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <a href="#" class="nav-brand" aria-label="LexiCheck Home">
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20h9"></path>
+          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+        </svg>
+      </div>
+      <span class="brand-title">LexiCheck NLP</span>
+      <span class="brand-badge">Academic & Industry Grade</span>
+    </a>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs" role="tablist">
+      <button class="nav-tab-btn active" id="tabBtn-editor" data-tab="editor" role="tab" aria-selected="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+        </svg>
+        Editor & Checker
+      </button>
+
+      <button class="nav-tab-btn" id="tabBtn-visualizer" data-tab="visualizer" role="tab" aria-selected="false">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="3" y1="9" x2="21" y2="9"></line>
+          <line x1="9" y1="21" x2="9" y2="9"></line>
+        </svg>
+        NLP Algorithm Studio
+      </button>
+
+      <button class="nav-tab-btn" id="tabBtn-benchmark" data-tab="benchmark" role="tab" aria-selected="false">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+        Benchmarks
+      </button>
+
+      <button class="nav-tab-btn" id="tabBtn-theory" data-tab="theory" role="tab" aria-selected="false">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+        </svg>
+        Theory & Viva Guide
+      </button>
+    </nav>
+
+    <!-- Theme & Action Controls -->
+    <div class="nav-actions">
+      <button class="theme-toggle-btn" id="themeToggle" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-container">
+
+    <!-- ================================================================= -->
+    <!-- TAB 1: GRAMMARLY-STYLE REAL-TIME EDITOR                           -->
+    <!-- ================================================================= -->
+    <section class="tab-content active" id="tab-editor" role="tabpanel">
+      
+      <!-- Split Workspace -->
+      <div class="workspace-grid">
+
+        <!-- Left Pane: Editor Container -->
+        <div class="editor-wrapper">
+          <div class="editor-toolbar">
+            <div class="toolbar-left">
+              <label for="presetSelector" style="font-size: 0.8rem; color: var(--text-muted);">Sample Text:</label>
+              <select class="preset-select" id="presetSelector">
+                <option value="college">College Essay (Spelling & Agreement Errors)</option>
+                <option value="business">Business Email (Tautology & Confusion Sets)</option>
+                <option value="academic">NLP Research Abstract (Double Words & Syntax)</option>
+                <option value="clean">Flawless Clean Writing</option>
+              </select>
+            </div>
+
+            <div class="toolbar-right">
+              <button class="btn-tool primary" id="btnAutoFixAll" title="Apply all automatic corrections at once">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                Auto-Fix All
+              </button>
+              <button class="btn-tool" id="btnCopyCorrected" title="Copy corrected text to clipboard">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                Copy
+              </button>
+              <button class="btn-tool" id="btnExportTxt" title="Download text as .txt file">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Export
+              </button>
+              <button class="btn-tool" id="btnClearText" title="Clear editor content">Clear</button>
+            </div>
+          </div>
+
+          <!-- Dual-Layer Editor Body -->
+          <div class="editor-body">
+            <div class="editor-highlights" id="editorHighlights" aria-hidden="true"></div>
+            <textarea class="editor-textarea" id="editorInput" placeholder="Type or paste your text here to begin spelling and grammar checking..." spellcheck="false" autocomplete="off" autocorrect="off"></textarea>
+          </div>
+
+          <!-- Editor Footer & Chips -->
+          <footer class="editor-footer">
+            <div class="editor-stats-chips">
+              <span class="error-chip chip-spelling">
+                <span id="spellingCountBadge">0</span> Spelling
+              </span>
+              <span class="error-chip chip-grammar">
+                <span id="grammarCountBadge">0</span> Grammar
+              </span>
+              <span class="error-chip chip-style">
+                <span id="styleCountBadge">0</span> Style / Context
+              </span>
+            </div>
+            <div id="wordCount">0 words / 0 sentences</div>
+          </footer>
+        </div>
+
+        <!-- Right Pane: Suggestion Cards Panel -->
+        <aside class="suggestions-panel">
+          <div class="panel-header">
+            <h2 class="panel-title">
+              Linguistic Assistant
+              <span class="issues-count-pill" id="totalIssuesCount">0</span>
+            </h2>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Live Inspection</span>
+          </div>
+
+          <div class="suggestions-scroll-list" id="suggestionsContainer">
+            <!-- Dynamically populated suggestion cards -->
+          </div>
+        </aside>
+
+      </div>
+
+      <!-- Bottom Analytics Bar -->
+      <section class="analytics-bar" aria-label="Text Readability Metrics">
+        <div class="metric-tile">
+          <span class="metric-label">Flesch Reading Ease</span>
+          <div class="metric-value-row">
+            <span class="metric-number" id="fleschScore">0</span>
+            <span class="metric-sub" id="fleschLabel">Standard</span>
+          </div>
+          <div class="score-gauge-track">
+            <div class="score-gauge-bar" id="scoreGaugeBar" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <div class="metric-tile">
+          <span class="metric-label">Grade Level</span>
+          <div class="metric-value-row">
+            <span class="metric-number" id="gradeLevel">Grade 0</span>
+          </div>
+          <span class="metric-sub">US Educational Standard</span>
+        </div>
+
+        <div class="metric-tile">
+          <span class="metric-label">Lexical Diversity</span>
+          <div class="metric-value-row">
+            <span class="metric-number" id="lexicalDiversity">0%</span>
+          </div>
+          <span class="metric-sub">Type-Token Ratio (TTR)</span>
+        </div>
+
+        <div class="metric-tile">
+          <span class="metric-label">Estimated Reading Time</span>
+          <div class="metric-value-row">
+            <span class="metric-number" id="readingTime">0s</span>
+          </div>
+          <span class="metric-sub">Average 200 WPM</span>
+        </div>
+
+        <div class="metric-tile">
+          <span class="metric-label">Python NLP Server API</span>
+          <div class="metric-value-row" style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.4;">
+            Run: <code style="color: var(--accent-primary); background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px;">python python/api.py</code> for local REST backend.
+          </div>
+        </div>
+      </section>
+
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- TAB 2: NLP ALGORITHM VISUALIZER STUDIO                            -->
+    <!-- ================================================================= -->
+    <section class="tab-content" id="tab-visualizer" role="tabpanel">
+      <div class="visualizer-section">
+
+        <!-- 1. Levenshtein Dynamic Programming Matrix Visualizer -->
+        <div class="visualizer-card">
+          <div class="visualizer-header">
+            <h2 class="visualizer-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="3" y1="9" x2="21" y2="9"></line>
+                <line x1="9" y1="21" x2="9" y2="9"></line>
+              </svg>
+              Levenshtein Distance Dynamic Programming Matrix
+            </h2>
+            <p class="visualizer-desc">
+              Visualizes the 2D Sequence Alignment table D[i, j] computing minimum edit distance. 
+              The green cells trace the optimal backtrace alignment path from D[m, n] back to D[0, 0].
+            </p>
+          </div>
+
+          <div class="vis-control-row">
+            <input type="text" class="vis-input" id="matrixSourceInput" placeholder="Source word (e.g. recieve)">
+            <input type="text" class="vis-input" id="matrixTargetInput" placeholder="Target word (e.g. receive)">
+            <button class="btn-vis-action" id="btnComputeMatrix">Compute Alignment Matrix</button>
+          </div>
+
+          <div id="matrixContainer"></div>
+        </div>
+
+        <!-- 2. Peter Norvig's Bayesian Candidate Probability Inspector -->
+        <div class="visualizer-card">
+          <div class="visualizer-header">
+            <h2 class="visualizer-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              Peter Norvig Bayesian Candidate Generator & Prior Probabilities
+            </h2>
+            <p class="visualizer-desc">
+              Computes candidate words within edit distances 1 and 2, filtering by vocabulary and ranking by corpus prior probability P(c).
+            </p>
+          </div>
+
+          <div class="vis-control-row">
+            <input type="text" class="vis-input" id="norvigWordInput" placeholder="Enter typo word (e.g. definately)">
+            <button class="btn-vis-action" id="btnInspectNorvig">Generate & Rank Candidates</button>
+          </div>
+
+          <div id="norvigContainer"></div>
+        </div>
+
+        <!-- 3. POS Tagger Visualizer -->
+        <div class="visualizer-card">
+          <div class="visualizer-header">
+            <h2 class="visualizer-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+              Part-of-Speech (POS) Syntactic Tagger
+            </h2>
+            <p class="visualizer-desc">
+              Tags grammatical tokens (Noun, Verb, Adjective, Pronoun, Preposition, Determiner) to power syntactic agreement checking.
+            </p>
+          </div>
+
+          <div class="vis-control-row">
+            <input type="text" class="vis-input" id="posSentenceInput" placeholder="Enter sentence (e.g. The scientist study the chemical reaction carefully)">
+            <button class="btn-vis-action" id="btnInspectPOS">Inspect POS Tokens</button>
+          </div>
+
+          <div id="posContainer"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- TAB 3: BENCHMARKS & EVALUATION SUITE                              -->
+    <!-- ================================================================= -->
+    <section class="tab-content" id="tab-benchmark" role="tabpanel">
+      <div class="visualizer-section">
+        <div class="visualizer-card">
+          <div class="visualizer-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h2 class="visualizer-title">Gold-Standard Test Sentences Benchmark</h2>
+              <p class="visualizer-desc">
+                Evaluates the NLP engine across non-word typos, subject-verb agreements, article allomorphs, confusion sets, and double negatives.
+              </p>
+            </div>
+            <button class="btn-vis-action" id="btnRunBenchmarkLive">Execute Live Benchmark</button>
+          </div>
+
+          <div id="benchmarkResultsContainer" style="margin-top: 1rem;">
+            <p style="color: var(--text-muted); font-size: 0.9rem;">
+              Click <strong>"Execute Live Benchmark"</strong> to run all annotated gold-standard test sentences through the NLP pipeline and display live Precision, Recall, and F1-Scores.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- TAB 4: NLP THEORY & VIVA GUIDE                                    -->
+    <!-- ================================================================= -->
+    <section class="tab-content" id="tab-theory" role="tabpanel">
+      <div class="visualizer-section">
+        
+        <div class="theory-grid">
+          <!-- Card 1 -->
+          <div class="theory-card">
+            <h3>1. Minimum Edit Distance (Levenshtein)</h3>
+            <p>Calculates the minimum edit operations (insertions, deletions, substitutions) required to transform source string <code>s1</code> of length <code>m</code> into target string <code>s2</code> of length <code>n</code>.</p>
+            <div class="formula-box">
+              D[i,j] = min {<br>
+              &nbsp;&nbsp;D[i-1, j] + 1 (Delete),<br>
+              &nbsp;&nbsp;D[i, j-1] + 1 (Insert),<br>
+              &nbsp;&nbsp;D[i-1, j-1] + cost(s1[i], s2[j])<br>
+              }
+            </div>
+            <p><strong>Complexity:</strong> Time: O(M &times; N), Space: O(M &times; N).</p>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="theory-card">
+            <h3>2. Peter Norvig's Bayesian Model</h3>
+            <p>Formulates spelling correction as Bayesian inference over a noisy channel model:</p>
+            <div class="formula-box">
+              c* = argmax_c P(c|w) = argmax_c [ P(w|c) &times; P(c) ]
+            </div>
+            <ul>
+              <li><strong>P(c):</strong> Prior probability from natural language corpus frequency.</li>
+              <li><strong>P(w|c):</strong> Error model based on edit distances (0, 1, or 2).</li>
+              <li><strong>Candidate Generation:</strong> 1-edit distance generates deletes, transposes, replaces, and inserts (~80% of human typos).</li>
+            </ul>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="theory-card">
+            <h3>3. Syntactic & Grammar Rules</h3>
+            <p>Rules enforce morphological, syntactic, and phonological well-formedness:</p>
+            <ul>
+              <li><strong>Subject-Verb Agreement:</strong> 3rd-person singular nouns require singular inflection (e.g. <em>study &rarr; studies</em>).</li>
+              <li><strong>Article Allomorphy:</strong> 'a' preceding consonant sound vs 'an' preceding vowel sound (handles glides and silent 'h').</li>
+              <li><strong>Double Negatives:</strong> Normalizes non-standard polarity negation.</li>
+            </ul>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="theory-card">
+            <h3>4. Real-Word Errors (Confusion Sets)</h3>
+            <p>Words that are legitimate lexicon entries but incorrect in context (e.g. <em>their</em> vs <em>there</em> vs <em>they're</em>; <em>its</em> vs <em>it's</em>; <em>affect</em> vs <em>effect</em>).</p>
+            <p>Resolved through N-gram collocation constraints, part-of-speech context, and syntactic dependencies.</p>
+          </div>
+
+          <!-- Card 5 -->
+          <div class="theory-card">
+            <h3>5. Readability & Linguistic Metrics</h3>
+            <p>Quantifies text difficulty using empirical metrics:</p>
+            <div class="formula-box">
+              Flesch Reading Ease =<br>
+              206.835 - 1.015(words/sent) - 84.6(syllables/word)
+            </div>
+            <p><strong>Type-Token Ratio (TTR):</strong> Measures vocabulary richness (unique words / total words).</p>
+          </div>
+
+          <!-- Card 6 -->
+          <div class="theory-card">
+            <h3>6. College Viva Q&amp;A Highlights</h3>
+            <ul>
+              <li><strong>Q: What is the difference between non-word and real-word errors?</strong><br>
+              <em>A: Non-word errors produce invalid strings ("recieve"); real-word errors produce valid words used incorrectly ("their going").</em></li>
+              <li><strong>Q: Why does Damerau-Levenshtein matter?</strong><br>
+              <em>A: It counts adjacent transpositions (swapping 2 letters) as 1 operation, capturing typing slip errors.</em></li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Benchmark Live Runner Script -->
+  <script>
+    document.getElementById("btnRunBenchmarkLive")?.addEventListener("click", () => {
+      const container = document.getElementById("benchmarkResultsContainer");
+      if (!container) return;
+
+      const testSentences = [
+        { cat: "Spelling (Non-word)", input: "I am definately going to recieve the package tomorow morning.", expected: ["definately", "recieve", "tomorow"] },
+        { cat: "Subject-Verb Agreement", input: "The scientist study the chemical reaction carefully.", expected: ["study"] },
+        { cat: "Article Agreement", input: "She bought a expensive watch and an laptop yesterday.", expected: ["a expensive", "an laptop"] },
+        { cat: "Confusion Set", input: "Their going to meet over there because it's they're turn.", expected: ["Their"] },
+        { cat: "Double Negative", input: "We don't need no help from anyone.", expected: ["don't need no"] },
+        { cat: "Redundancy", input: "Please revert back as soon as possible with the end result.", expected: ["revert back", "end result"] },
+        { cat: "Repeated Word", input: "Natural language processing is is a fascinating field.", expected: ["is is"] }
+      ];
+
+      let tp = 0, fp = 0, fn = 0;
+      let rowsHtml = "";
+
+      testSentences.forEach((item, idx) => {
+        const res = window.NLPEngine.analyze(item.input);
+        const detected = res.issues.map(i => i.original);
+
+        let itemTp = 0;
+        item.expected.forEach(exp => {
+          if (detected.some(d => d.toLowerCase().includes(exp.toLowerCase()) || exp.toLowerCase().includes(d.toLowerCase()))) {
+            itemTp++;
+          }
+        });
+
+        const itemFn = item.expected.length - itemTp;
+        const itemFp = Math.max(0, detected.length - itemTp);
+        tp += itemTp;
+        fn += itemFn;
+        fp += itemFp;
+
+        const isPass = itemTp === item.expected.length && itemFp === 0;
+
+        rowsHtml += `
+          <tr>
+            <td style="font-weight:600;">#${idx + 1}</td>
+            <td><span class="category-badge badge-grammar">${item.cat}</span></td>
+            <td><em>${item.input}</em></td>
+            <td style="color:var(--color-success);">${item.expected.join(", ")}</td>
+            <td style="color:var(--accent-primary);">${detected.join(", ") || "None"}</td>
+            <td><strong style="color: ${isPass ? 'var(--color-success)' : 'var(--color-grammar)'};">${isPass ? 'PASS' : 'PARTIAL'}</strong></td>
+          </tr>
+        `;
+      });
+
+      const precision = tp / (tp + fp) || 1;
+      const recall = tp / (tp + fn) || 1;
+      const f1 = (2 * precision * recall) / (precision + recall) || 1;
+
+      container.innerHTML = `
+        <div style="display:flex; gap:1.5rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+          <div class="stat-badge">Precision: <strong style="color:var(--color-success);">${(precision * 100).toFixed(1)}%</strong></div>
+          <div class="stat-badge">Recall: <strong style="color:var(--color-success);">${(recall * 100).toFixed(1)}%</strong></div>
+          <div class="stat-badge">F1-Score: <strong style="color:var(--accent-primary);">${(f1 * 100).toFixed(1)}%</strong></div>
+          <div class="stat-badge">True Positives: <strong>${tp}</strong></div>
+        </div>
+
+        <div class="table-scroll-wrapper">
+          <table class="dp-matrix-table" style="text-align:left;">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Category</th>
+                <th>Test Input</th>
+                <th>Expected Error</th>
+                <th>Detected by Engine</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+        </div>
+      `;
+    });
+  </script>
+
+  <!-- Application Logic Scripts -->
+  <script src="js/dictionary.js"></script>
+  <script src="js/nlp-engine.js"></script>
+  <script src="js/visualizer.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>

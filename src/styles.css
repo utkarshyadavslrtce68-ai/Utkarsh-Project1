@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-primary: #0a0d14;
+    --bg-secondary: #111726;
+    --bg-tertiary: #192238;
+    --bg-card: rgba(25, 34, 56, 0.7);
+    --bg-card-hover: rgba(32, 44, 72, 0.85);
+
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-focus: #6366f1;
+
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+
+    --accent-primary: #6366f1;
+    --accent-secondary: #8b5cf6;
+    --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+
+    --color-spelling: #f43f5e;
+    --color-spelling-bg: rgba(244, 63, 94, 0.12);
+    --color-grammar: #f59e0b;
+    --color-grammar-bg: rgba(245, 158, 11, 0.12);
+    --color-style: #06b6d4;
+    --color-style-bg: rgba(6, 182, 212, 0.12);
+    --color-confusion: #a855f7;
+    --color-confusion-bg: rgba(168, 85, 247, 0.12);
+    --color-success: #10b981;
+  }
+
+  [data-theme="light"] {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f1f5f9;
+    --bg-card: rgba(255, 255, 255, 0.85);
+    --bg-card-hover: #ffffff;
+
+    --border-subtle: rgba(0, 0, 0, 0.08);
+    --border-focus: #4f46e5;
+
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+}
+
+/* Wavy underline error mark classes */
+mark.hl-error {
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+}
+
+mark.hl-spelling {
+  text-decoration: underline wavy var(--color-spelling) 2.5px;
+  text-underline-offset: 4px;
+  background-color: var(--color-spelling-bg);
+}
+
+mark.hl-grammar {
+  text-decoration: underline wavy var(--color-grammar) 2.5px;
+  text-underline-offset: 4px;
+  background-color: var(--color-grammar-bg);
+}
+
+mark.hl-style {
+  text-decoration: underline wavy var(--color-style) 2.5px;
+  text-underline-offset: 4px;
+  background-color: var(--color-style-bg);
+}
+
+mark.hl-error:hover {
+  filter: brightness(1.2);
+}
+
+/* Pulse animation on card jump */
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); }
+  70% { box-shadow: 0 0 0 12px rgba(99, 102, 241, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+}
+
+.highlight-pulse {
+  animation: pulseGlow 1.2s ease;
+}

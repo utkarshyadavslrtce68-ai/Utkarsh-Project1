@@ -1,0 +1,50 @@
+[
+  {
+    "category": "Spelling (Non-word)",
+    "input": "I am definately going to recieve the package tomorow morning.",
+    "expected_errors": ["definately", "recieve", "tomorow"],
+    "corrected": "I am definitely going to receive the package tomorrow morning."
+  },
+  {
+    "category": "Subject-Verb Agreement",
+    "input": "The scientist study the chemical reaction carefully.",
+    "expected_errors": ["study"],
+    "corrected": "The scientist studies the chemical reaction carefully."
+  },
+  {
+    "category": "Indefinite Article Agreement",
+    "input": "She bought a expensive watch and an laptop yesterday.",
+    "expected_errors": ["a expensive", "an laptop"],
+    "corrected": "She bought an expensive watch and a laptop yesterday."
+  },
+  {
+    "category": "Confusion Set (Homophone)",
+    "input": "Their going to meet over there because it's they're turn.",
+    "expected_errors": ["Their"],
+    "corrected": "They're going to meet over there because it's their turn."
+  },
+  {
+    "category": "Double Negative",
+    "input": "We don't need no help from anyone.",
+    "expected_errors": ["don't need no"],
+    "corrected": "We don't need any help from anyone."
+  },
+  {
+    "category": "Redundancy & Wordiness",
+    "input": "Please revert back as soon as possible with the end result.",
+    "expected_errors": ["revert back", "end result"],
+    "corrected": "Please reply as soon as possible with the result."
+  },
+  {
+    "category": "Punctuation & Contraction",
+    "input": "dont worry, it is not a big deal.",
+    "expected_errors": ["dont", "lowercase start"],
+    "corrected": "Don't worry, it is not a big deal."
+  },
+  {
+    "category": "Repeated Word",
+    "input": "Natural language processing is is a fascinating field.",
+    "expected_errors": ["is is"],
+    "corrected": "Natural language processing is a fascinating field."
+  }
+]
